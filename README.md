@@ -24,7 +24,7 @@ Crypto Dashboard is a desktop application that provides an intuitive interface t
 - **Wallet Balances**: View balances for wallets, including ETH and custom tokens.
 - **Custom Filters**: Use dropdown filters for DeFi pools.
 - **UI Refresh**: Dynamic menu updates and data refresh with keyboard shortcuts.
-- **Settings Management**: Configure wallet addresses, API keys, and UI themes.
+- **Settings Management**: Configure wallet addresses, API keys, and UI themes (TBA).
 - **Responsive Logging**: Application logs with custom filenames, including date and time.
 
 ---
@@ -150,11 +150,12 @@ crypto_dashboard/
 │   │   ├── positions.py
 │   │   └── settings.py
 │   └── app.py
+├── logs/ (Created on first app start)
 ├── settings/
 │   ├── credentials.json
 │   ├── logging_config.json
 │   └── stylesheet.qss
-├── user_data/ (Created upon first run)
+├── user_data/ (Also Created on first app start)
 ├── main.py
 ├── README.md
 └── requirements.txt
