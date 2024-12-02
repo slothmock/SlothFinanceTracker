@@ -1,6 +1,6 @@
-# Crypto Dashboard
+# Sloth Finance Tracker
 
-Crypto Dashboard is a desktop application that provides an intuitive interface to track cryptocurrency holdings on Coinbase, DeFi positions (Currently Manual Input), and manage your Income/Expenses (TBA).
+Sloth Finance Tracker is a desktop application that provides an intuitive interface to track cryptocurrency holdings on Coinbase, DeFi positions (Currently Manual Input), and manage your Income/Expenses (TBA).
 
 ---
 
