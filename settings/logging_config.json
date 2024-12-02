@@ -1,0 +1,26 @@
+{
+    "version": 1,
+    "formatters": {
+        "default": {
+            "format": "%(asctime)s - %(levelname)s - %(message)s",
+            "datefmt": "%H:%M:%S %d-%m-%Y"
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "DEBUG",
+            "formatter": "default"
+        },
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": "",
+            "level": "INFO",
+            "formatter": "default"
+        }
+    },
+    "root": {
+        "level": "DEBUG",
+        "handlers": ["console", "file"]
+    }
+}
