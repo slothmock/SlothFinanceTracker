@@ -37,11 +37,6 @@ async def main():
     main_menu.show()
     logging.info("MainMenu displayed.")
 
-    # Init Crypto Dashboard (optional entry point)
-    # Uncomment to directly load CryptoDashboard
-    # dashboard = CryptoDashboard(window_manager)
-    # dashboard.show()
-
     # Run the QEventLoop
     with loop:
         loop.run_forever()

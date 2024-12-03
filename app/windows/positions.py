@@ -68,7 +68,7 @@ class PositionTracker(QMainWindow):
 
         # Buttons
         self.buttons_layout = QHBoxLayout()
-        self.add_position_button = QPushButton("Add Position")
+        self.add_position_button = QPushButton("Add/Edit Position")
         self.add_position_button.clicked.connect(self.add_position)
         self.buttons_layout.addWidget(self.add_position_button)
 
@@ -146,7 +146,8 @@ class PositionTracker(QMainWindow):
         """
         Open a dialog to add a new position and refresh the data.
         """
-        dialog = PositionDialog(filepath=DEFI_POS_FILE)
+        data = self.defi_model._data[self.positions_table.get_current_row()]
+        dialog = PositionDialog(filepath=DEFI_POS_FILE, prefill_data=data if data else None)
         if dialog.exec():
             asyncio.create_task(self._update_data_async())
 
@@ -175,7 +176,7 @@ class PositionDialog(QDialog):
             input_field = QLineEdit()
             self.layout.addWidget(label)
             self.layout.addWidget(input_field)
-            self.inputs[field.lower().replace(" ", "_")] = input_field
+            self.inputs[field] = input_field
 
         spacer = QSpacerItem(0, 20)
         self.layout.addSpacerItem(spacer)
@@ -200,11 +201,11 @@ class PositionDialog(QDialog):
         """
         Prefill the dialog with existing data.
         """
-        if "date" in data:
-            self.date_input.setDate(QDate.fromString(data["date"], "yyyy-MM-dd"))
+        if "Date" in data:
+            self.date_input.setDate(QDate.fromString(data["Date"], "dd-MM-YYYY"))
         for key, value in data.items():
             if key in self.inputs:
-                self.inputs[key].setText(str(value))
+                self.inputs[key].setText(str(value).replace("$", ""))
 
     def save_position(self):
         """
@@ -213,7 +214,7 @@ class PositionDialog(QDialog):
         try:
             # Gather data
             data = {
-                "date": self.date_input.date().toString("yyyy-MM-dd"),
+                "Date": self.date_input.date().toString("dd-MM-yyyy"),
                 **{key: self.inputs[key].text() for key in self.inputs}
             }
 

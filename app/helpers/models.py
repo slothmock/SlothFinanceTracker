@@ -1,8 +1,9 @@
 
 import csv, aiofiles, aiohttp, asyncio, logging
+from datetime import datetime
 import os
 
-from PySide6.QtCore import Qt, QAbstractTableModel
+from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel
 
 from coinbase.rest import RESTClient
 
@@ -333,3 +334,30 @@ class WalletAddressModel(QAbstractTableModel):
             return float(value.replace("$", "").replace(",", "")) if isinstance(value, str) else float(value)
         except ValueError:
             return value  # Fallback to raw value for strings
+        
+class CustomSortFilterProxyModel(QSortFilterProxyModel):
+    def lessThan(self, left, right):
+        """
+        Custom sorting logic for QSortFilterProxyModel.
+        """
+        left_data = self.sourceModel().data(left)
+        right_data = self.sourceModel().data(right)
+
+        # Handle date strings formatted as dd-mm-yyyy
+        try:
+            left_date = datetime.strptime(left_data, "%d-%m-%Y")
+            right_date = datetime.strptime(right_data, "%d-%m-%Y")
+            return left_date < right_date
+        except ValueError:
+            pass  # Not a date, fallback to default sorting
+
+        # Handle numerical strings
+        try:
+            return float(left_data.replace("$", "").replace(",", "")) < float(
+                right_data.replace("$", "").replace(",", "")
+            )
+        except ValueError:
+            pass  # Not a number, fallback to string comparison
+
+        # Default string comparison
+        return left_data < right_data

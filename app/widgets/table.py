@@ -1,6 +1,8 @@
 from PySide6.QtWidgets import QTableView, QHeaderView
 from PySide6.QtCore import Qt, QSortFilterProxyModel
 
+from app.helpers.models import CustomSortFilterProxyModel
+
 
 class CustomTableWidget(QTableView):
     """
@@ -10,10 +12,10 @@ class CustomTableWidget(QTableView):
         super().__init__(parent)
 
         self.last_sorted_column = 0  # Track the last sorted column
-        self.sort_order = Qt.SortOrder.AscendingOrder  # Track the last sort order
+        self.sort_order = Qt.SortOrder.DescendingOrder  # Track the last sort order, default to descending
 
         # Initialize proxy model for filtering and sorting
-        self.proxy_model = QSortFilterProxyModel()
+        self.proxy_model = CustomSortFilterProxyModel()
         self.proxy_model.setDynamicSortFilter(True)
         self.proxy_model.setFilterKeyColumn(-1)  # Default to no filtering
         if model:
@@ -27,7 +29,7 @@ class CustomTableWidget(QTableView):
         self.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 
         # Default sorting
-        self.sortByColumn(0, Qt.SortOrder.AscendingOrder)
+        self.sortByColumn(0, self.sort_order)
 
         # Signal to track column sorting
         self.horizontalHeader().sectionClicked.connect(self.on_section_clicked)
@@ -84,7 +86,7 @@ class CustomTableWidget(QTableView):
         # Apply sorting
         self.sortByColumn(index, self.sort_order)
 
-    def reset_sorting(self, column=0, order=Qt.SortOrder.AscendingOrder):
+    def reset_sorting(self, column=0, order=Qt.SortOrder.DescendingOrder):
         """
         Reset sorting to a specific column and order.
         
@@ -111,6 +113,7 @@ class CustomTableWidget(QTableView):
                 if filter_value in ["", "All"]:  # Clear filter if "All" or empty
                     self.proxy_model.setFilterKeyColumn(-1)
                     self.proxy_model.setFilterRegularExpression("")
+                    self.reset_sorting()
                 else:
                     self.proxy_model.setFilterKeyColumn(column_index)
                     self.proxy_model.setFilterRegularExpression(filter_value)
