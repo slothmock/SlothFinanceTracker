@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, Signal, QDate
 from PySide6.QtGui import QIcon
 
-from app.models.structs import Card
+from app.models.dataclasses import Card
 
 
 class UpdateCashDialog(QDialog):

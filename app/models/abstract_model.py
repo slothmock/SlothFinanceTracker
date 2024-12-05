@@ -3,7 +3,8 @@ from abc import ABC, ABCMeta
 
 from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex, Signal
 
-from app.models.structs import DefiPosition
+from app.helpers.utils import parse_float
+from app.models.dataclasses import DefiPosition
 
 class QAbstractABCMeta(type(QAbstractTableModel), ABCMeta): # Define a combined metaclass
     '''Combined metaclass to incorporate functionality from PySide6'''
@@ -92,7 +93,7 @@ class AbstractModel(QAbstractTableModel, ABC, metaclass=QAbstractABCMeta):
         Generalized total calculation method for dataclasses.
 
         Args:
-            column_key (str): The key (attribute name) of the column to sum up. Defaults to None.
+            column_key (str): The key (attribute name or header) of the column to sum up.
             custom_logic (callable): A custom calculation logic function.
 
         Returns:
@@ -105,15 +106,18 @@ class AbstractModel(QAbstractTableModel, ABC, metaclass=QAbstractABCMeta):
                 self.logger.error(f"Error in custom total calculation: {e}")
                 return None
 
-        if not column_key or not hasattr(DefiPosition, column_key):
-            self.logger.warning(f"Invalid or unspecified column key for total calculation: {column_key}")
+        # Map column_key to dataclass attribute
+        attribute = self.HEADER_TO_ATTRIBUTE_MAP.get(column_key, None)
+        if not attribute:
+            self.logger.warning(f"Invalid column key for total calculation: {column_key}")
             return 0.0
 
         total = 0.0
         try:
             for item in self._data:
-                value = getattr(item, column_key, 0)
-                total += value
+                # Use getattr to fetch the attribute value
+                value = getattr(item, attribute, 0)
+                total += parse_float(value)
         except (ValueError, TypeError, AttributeError) as e:
             self.logger.error(f"Error calculating total for column '{column_key}': {e}")
 

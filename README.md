@@ -21,9 +21,9 @@ Sloth Finance Tracker is a desktop application that provides an intuitive interf
 
 - **Track Coinbase Holdings**: Automatically fetch and display your holdings from Coinbase.
 - **DeFi Position Tracking**: Import and analyze DeFi positions from a CSV file.
-- **Wallet Balances**: View balances for wallets, including ETH and custom tokens.
+- **Wallet Balances**: View balances for wallets on Base, including ETH and custom tokens.
 - **Custom Filters**: Use dropdown filters for DeFi pools.
-- **UI Refresh**: Dynamic menu updates and data refresh with keyboard shortcuts.
+- **UI Refresh**: Dynamic menu updates and data refresh with keyboard shortcuts (TBA)
 - **Settings Management**: Configure wallet addresses, API keys, and UI themes (TBA).
 - **Responsive Logging**: Application logs with custom filenames, including date and time.
 
@@ -46,7 +46,6 @@ cd sloth_finance_tracker
 #### Install Dependencies
 
 ```bash
-Copy code
 pip install -r requirements.txt
 ```
 
@@ -62,7 +61,7 @@ python main.py
 
 #### Keyboard Shortcuts
 
-- F5: Refresh active dashboard
+- F5: Refresh active dashboard (TBA)
 - Ctrl+Q: Exit the application
 
 ---
@@ -133,11 +132,23 @@ Place API keys in credentials.json:
 ```plaintext
 crypto_dashboard/
 ├── app/
+|   ├── assets/
+|   |   └── icons/
+|   |       ├── minus.png
+|   |       ├── plus.png
+|   |       └── refresh.png        
 │   ├── helpers/
-│   │   ├── models.py
-|   |   ├── proxy_model.py
 │   │   ├── strings.py
 │   │   └── utils.py
+|   ├── models/
+|   |   ├── __init__.py
+        ├── abstract_model.py
+        ├── coinbase_model.py
+        ├── dataclasses.py
+        ├── defi_model.py
+        ├── fiat_model.py
+        ├── sorting_model.py
+        └── wallet_address_model.py
 │   ├── widgets/
 |   |   ├── __init__.py
 │   │   ├── dialogs.py
@@ -147,15 +158,21 @@ crypto_dashboard/
 │   ├── windows/
 |   |   ├── __init__.py
 │   │   ├── crypto.py
+|   |   ├── fiat.py
+|   |   ├── main_menu.py
 │   │   ├── positions.py
 │   │   └── settings.py
 │   └── app.py
 ├── logs/ (Created on first app start)
 ├── settings/
+|   |── themes (TBA)/
+|   |   ├── dark.qss
+|   |   └── light.qss
 │   ├── credentials.json
 │   ├── logging_config.json
 │   └── stylesheet.qss
 ├── user_data/ (Also Created on first app start)
+├── LICENSE
 ├── main.py
 ├── README.md
 └── requirements.txt

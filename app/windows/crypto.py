@@ -158,12 +158,15 @@ class CryptoDashboard(QMainWindow):
 
             # Coinbase total
             coinbase_total = await self.coinbase_model.get_total()
+            logging.info(f"Coinbase Total: {coinbase_total}")
 
             # Wallet total
             wallet_total = await self.wallet_model.get_total()
+            logging.info(f"Wallet Total: {wallet_total}")
 
             # DeFi totals (custom logic)
             defi_totals = await self.defi_model.calculate_defi_totals()
+            logging.info(f"DeFi Totals: {defi_totals}")
             defi_total_value = defi_totals.get("total_value", 0.0)
             defi_total_fees = defi_totals.get("total_fees", 0.0)
 

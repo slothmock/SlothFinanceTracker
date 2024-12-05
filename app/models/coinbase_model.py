@@ -8,7 +8,7 @@ from app.helpers.utils import fetch_crypto_price, load_credentials
 
 from coinbase.rest import RESTClient
 
-from app.models.structs import Holding
+from app.models.dataclasses import Holding
 
 class CoinbaseHoldingsModel(AbstractModel):
     def __init__(self, data=None):

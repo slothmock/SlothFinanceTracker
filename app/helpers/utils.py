@@ -1,4 +1,4 @@
-import aiofiles, aiohttp, json, os, asyncio, logging
+import aiofiles, aiohttp, json, os, asyncio, logging, re
 
 from app.helpers.strings import CREDENTIALS_FILE, SETTINGS_FILE
 
@@ -24,15 +24,22 @@ async def fetch_crypto_price(crypto: str, fiat: str = "USD") -> float:
         logging.exception(f"Error fetching crypto price for {crypto}-{fiat}: {e}")
         return 0.0
 
+
 def parse_float(value, default=0.0) -> float:
     """
-    Safely parse a value as a float.
+    Safely parse a value as a float, handling strings with special characters like '$', ',', or spaces.
+    
     Args:
         value: The value to parse.
         default: The default value to return if parsing fails.
+        
     Returns:
         float: The parsed float or the default value.
     """
+    if isinstance(value, str):
+        # Remove non-numeric characters (except '.' and '-')
+        value = re.sub(r"[^\d\.-]", "", value)
+    
     try:
         return float(value)
     except (ValueError, TypeError):

@@ -5,7 +5,7 @@ from cachetools import TTLCache
 from app.models.abstract_model import AbstractModel
 from app.helpers.strings import DEFI_POS_FILE
 from app.helpers.utils import parse_float
-from app.models.structs import DefiPosition
+from app.models.dataclasses import DefiPosition
 
 
 class DefiPositionsModel(AbstractModel):
@@ -62,10 +62,12 @@ class DefiPositionsModel(AbstractModel):
             total_fees = 0.0
 
             for position in self._data:
+                print(position)
                 pool = position.Pool
                 if pool not in unique_pools:
                     unique_pools.add(pool)
                     pos_value = parse_float(position.Total_Value)
+                    print(pos_value)
                     total_value += pos_value
                 total_fees += parse_float(position.Fees)
 

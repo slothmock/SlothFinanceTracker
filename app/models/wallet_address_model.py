@@ -3,7 +3,7 @@ from cachetools import TTLCache
 
 from app.models.abstract_model import AbstractModel
 from app.helpers.utils import fetch_crypto_price, parse_float, load_credentials, load_settings
-from app.models.structs import Holding
+from app.models.dataclasses import Holding
 
 
 class WalletAddressModel(AbstractModel):

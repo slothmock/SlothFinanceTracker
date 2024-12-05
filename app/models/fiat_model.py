@@ -8,7 +8,7 @@ from PySide6.QtCore import Signal
 
 from app.helpers.strings import EXPENSES_FILE
 from app.models.abstract_model import AbstractModel
-from app.models.structs import Card, Transaction
+from app.models.dataclasses import Card, Transaction
 
 class FiatModel(AbstractModel):
     data_changed = Signal()  # Signal for updating UI
