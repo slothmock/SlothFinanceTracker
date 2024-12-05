@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QTableView, QHeaderView
-from PySide6.QtCore import Qt, QSortFilterProxyModel
+from PySide6.QtCore import Qt
 
-from app.helpers.models import CustomSortFilterProxyModel
+from app.models.sorting_model import CustomSortFilterProxyModel
 
 
 class CustomTableWidget(QTableView):
@@ -62,6 +62,7 @@ class CustomTableWidget(QTableView):
         Refresh the table view when data changes.
         """
         if self.model():
+            self.resizeColumnsToContents()
             self.model().layoutChanged.emit()
 
     def on_section_clicked(self, index):

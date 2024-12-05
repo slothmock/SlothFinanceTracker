@@ -3,7 +3,4 @@ qasync
 aiohttp
 aiofiles
 coinbase
-
-pytest 
-pytest-qt
-pytest-asyncio
+cachetools

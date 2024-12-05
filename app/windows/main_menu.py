@@ -49,7 +49,8 @@ class MainMenu(QMainWindow):
         self.window_manager = window_manager
 
         # Shared menu bar
-        self.setMenuBar(AppMenu(self))
+        self.menu_bar = AppMenu(self)
+        self.setMenuBar(self.menu_bar)
 
         # Initialize UI
         self.setup_ui()
@@ -74,8 +75,8 @@ class MainMenu(QMainWindow):
 
         # Buttons for navigation
         buttons = [
-            ("Expense Tracker (TBA)", "expenses", False),  # Disabled for now
-            ("Crypto Overview", "overview", True),
+            ("Fiat Overview", "fiat", True),
+            ("Crypto Overview", "crypto", True),
             ("DeFi Positions", "positions", True),
             ("Settings", "settings", True),
         ]
@@ -96,10 +97,10 @@ class MainMenu(QMainWindow):
         """
         try:
             match window_type:
-                case "expenses":
+                case "fiat":
                     from app.windows.fiat import FiatDashboard
                     window = FiatDashboard(self.window_manager)
-                case "overview":
+                case "crypto":
                     from app.windows.crypto import CryptoDashboard
                     window = CryptoDashboard(self.window_manager)
                 case "positions":
@@ -123,5 +124,9 @@ class MainMenu(QMainWindow):
         """
         if event.type() == QEvent.WindowActivate:
             logging.debug(f"{self.__class__.__name__} activated: Updating menus.")
-            self.menuBar().dynamic_update_menu()
+            self.menu_bar.dynamic_update_menu()
         return super().event(event)
+    
+    def closeEvent(self, event):
+        self.window_manager.close_all_windows.emit()
+        super().closeEvent(event)

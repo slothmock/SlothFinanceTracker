@@ -1,10 +1,13 @@
-from datetime import datetime
+import logging
+
 from PySide6.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton, QTableWidget, QTableWidgetItem,
-    QHeaderView, QHBoxLayout, QInputDialog, QMessageBox
+    QHeaderView, QHBoxLayout, QMessageBox, QInputDialog, QDateEdit, QAbstractItemView
 )
-from PySide6.QtCore import Signal, Qt
-import logging
+from PySide6.QtCore import Qt, Signal, QDate
+from PySide6.QtGui import QIcon
+
+from app.models.structs import Card
 
 
 class UpdateCashDialog(QDialog):
@@ -59,26 +62,57 @@ class ManageCardsDialog(QDialog):
     def __init__(self, current_cards=None, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Manage Cards")
-        self.setMinimumSize(400, 300)
+        self.setMinimumSize(500, 350)
 
         self.layout = QVBoxLayout()
+
+        # Top layout with Table and Add/Remove Buttons
+        top_layout = QHBoxLayout()
 
         # Cards Table
         self.cards_table = QTableWidget(0, 2)
         self.cards_table.setHorizontalHeaderLabels(["Card Name", "Balance"])
         self.cards_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.layout.addWidget(self.cards_table)
+        self.cards_table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.cards_table.setSelectionMode(QAbstractItemView.SingleSelection)
 
-        # Add and Remove Buttons
-        button_layout = QHBoxLayout()
-        self.add_button = QPushButton("Add Card")
+        # Add and Remove Buttons (with icons)
+        self.buttons_layout = QVBoxLayout()
+        self.add_button = QPushButton()
+        self.add_button.setIcon(QIcon("app/assets/icons/plus.png"))
+        self.add_button.setToolTip("Add Card")
         self.add_button.clicked.connect(self.add_card)
-        self.remove_button = QPushButton("Remove Selected")
+
+        self.remove_button = QPushButton()
+        self.remove_button.setIcon(QIcon("app/assets/icons/minus.png")) 
+        self.remove_button.setToolTip("Remove Selected Card")
         self.remove_button.clicked.connect(self.remove_selected_card)
+
+        # Add Buttons to a vertical layout
+        button_layout = QVBoxLayout()
+        button_layout.setAlignment(Qt.AlignTop)
         button_layout.addWidget(self.add_button)
         button_layout.addWidget(self.remove_button)
-        self.layout.addLayout(button_layout)
+        button_layout.addStretch()
 
+        # Add table and button layout to the top layout
+        top_layout.addWidget(self.cards_table)
+        top_layout.addLayout(button_layout)
+
+        # Add the top layout to the main layout
+        self.layout.addLayout(top_layout)
+
+        # Accept/Cancel Buttons at the bottom
+        action_buttons_layout = QHBoxLayout()
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.clicked.connect(self.reject)
+        self.accept_button = QPushButton("Accept")
+        self.accept_button.clicked.connect(self.accept)
+        action_buttons_layout.addStretch()
+        action_buttons_layout.addWidget(self.cancel_button)
+        action_buttons_layout.addWidget(self.accept_button)
+
+        self.layout.addLayout(action_buttons_layout)
         self.setLayout(self.layout)
 
         # Populate initial cards
@@ -91,9 +125,10 @@ class ManageCardsDialog(QDialog):
         Add a new card to the table.
         """
         name, name_ok = QInputDialog.getText(self, "Add Card", "Enter card name:")
+
         balance, balance_ok = QInputDialog.getDouble(self, "Add Card", "Enter initial balance:", decimals=2)
-        if name_ok and balance_ok:
-            self._add_card_to_table(name, balance)
+        if name_ok and balance_ok and name.strip():
+            self._add_card_to_table(name.strip(), balance)
 
     def _add_card_to_table(self, name, balance):
         """
@@ -106,11 +141,12 @@ class ManageCardsDialog(QDialog):
 
     def remove_selected_card(self):
         """
-        Remove selected cards from the table.
+        Remove the selected card from the table.
         """
-        selected_rows = {item.row() for item in self.cards_table.selectedItems()}
-        for row in sorted(selected_rows, reverse=True):
-            self.cards_table.removeRow(row)
+        selected_items = self.cards_table.selectedItems()
+        if selected_items:
+            selected_row = selected_items[0].row()
+            self.cards_table.removeRow(selected_row)
 
     def accept(self):
         """
@@ -118,70 +154,97 @@ class ManageCardsDialog(QDialog):
         """
         cards = []
         for row in range(self.cards_table.rowCount()):
-            name = self.cards_table.item(row, 0).text()
-            balance = float(self.cards_table.item(row, 1).text().replace("£", ""))
-            cards.append({"name": name, "balance": balance})
+            name_item = self.cards_table.item(row, 0)
+            balance_item = self.cards_table.item(row, 1)
+            if name_item and balance_item:
+                try:
+                    name = name_item.text()
+                    balance = float(balance_item.text().replace("£", ""))
+                    cards.append(Card(name=name, balance=balance))
+                except ValueError:
+                    continue  # Skip invalid rows
         self.cards_updated.emit(cards)
         super().accept()
 
 
 class AddTransactionDialog(QDialog):
-    def __init__(self, transaction_type, parent=None):
+    def __init__(self, prefill_data=None, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(f"Add {transaction_type}")
-        self.transaction_type = transaction_type
-        self.transaction = None
+        self.setWindowTitle("Add/Edit Transaction")
+        self.setMinimumSize(400, 300)
 
+        # Layout
         self.layout = QVBoxLayout()
 
-        # Description Input
-        self.description_input = QLineEdit()
-        self.description_input.setPlaceholderText(f"Enter {transaction_type.lower()} description")
-        self.layout.addWidget(QLabel("Description:"))
-        self.layout.addWidget(self.description_input)
+        # Inputs
+        self.inputs = {}
+        fields = ["Source", "Date", "Name", "Description", "Amount", "Type"]
+        for field in fields:
+            label = QLabel(field)
+            input_field = QLineEdit()
 
-        # Amount Input
-        self.amount_input = QLineEdit()
-        self.amount_input.setPlaceholderText(f"Enter {transaction_type.lower()} amount")
-        self.layout.addWidget(QLabel("Amount:"))
-        self.layout.addWidget(self.amount_input)
+            # Date-specific configuration
+            if field == "Date":
+                input_field = QDateEdit()
+                input_field.setDate(QDate.currentDate())
+                input_field.setCalendarPopup(True)
+
+            self.layout.addWidget(label)
+            self.layout.addWidget(input_field)
+            self.inputs[field] = input_field
 
         # Buttons
-        self.button_layout = QHBoxLayout()
-        save_button = QPushButton("Save")
-        save_button.clicked.connect(self.save_transaction)
-        cancel_button = QPushButton("Cancel")
-        cancel_button.clicked.connect(self.reject)
-        self.button_layout.addWidget(cancel_button)
-        self.button_layout.addWidget(save_button)
-        self.layout.addLayout(self.button_layout)
+        self.buttons_layout = QHBoxLayout()
+        self.save_button = QPushButton("Save")
+        self.save_button.clicked.connect(self.save_transaction)
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.clicked.connect(self.reject)
+        self.buttons_layout.addWidget(self.cancel_button)
+        self.buttons_layout.addWidget(self.save_button)
+        self.layout.addLayout(self.buttons_layout)
 
         self.setLayout(self.layout)
 
+        # Prefill data if provided
+        if prefill_data:
+            self.prefill_data(prefill_data)
+
+    def prefill_data(self, data):
+        """
+        Prefill the dialog with existing data.
+        """
+        for key, value in data.items():
+            if key == "Date":
+                # Handle date-specific prefilling
+                self.inputs[key].setDate(QDate.fromString(value, "dd-MM-yyyy"))
+            elif key in self.inputs:
+                # Handle other fields
+                self.inputs[key].setText(str(value).replace("£", ""))
+
     def save_transaction(self):
         """
-        Validate and save the transaction.
+        Validate and return the transaction data.
         """
-        description = self.description_input.text().strip()
-        amount_text = self.amount_input.text().strip()
-
+        transaction = {}
         try:
-            amount = float(amount_text)
-            if amount <= 0:
-                raise ValueError("Amount must be greater than zero.")
-        except ValueError:
-            QMessageBox.warning(self, "Invalid Input", "Please enter a valid amount.")
-            return
+            for key, input_field in self.inputs.items():
+                if key == "Date":
+                    # Convert QDateEdit value to string in the correct format
+                    transaction[key] = input_field.date().toString("dd-MM-yyyy")
+                elif key == "Amount":
+                    # Validate and convert amount to float
+                    transaction[key] = float(input_field.text())
+                else:
+                    # Handle other fields as strings
+                    transaction[key] = input_field.text()
 
-        self.transaction = {
-            "date": datetime.now().strftime("%d %b %y"),
-            "description": description,
-            "amount": amount if self.transaction_type == "Income" else -amount,
-        }
-        self.accept()
+            self.accept()  # Close dialog with QDialog.Accepted
+            self.transaction_data = transaction  # Store transaction for retrieval
+        except ValueError as e:
+            QMessageBox.warning(self, "Invalid Input", f"Error in input data: {e}")
 
     def get_transaction(self):
         """
-        Return the saved transaction.
+        Return the transaction data after the dialog is accepted.
         """
-        return self.transaction
+        return getattr(self, "transaction_data", None)

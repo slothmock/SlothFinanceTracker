@@ -68,7 +68,7 @@ class AppMenu(QMenuBar):
             self.update_menu.addAction(refresh_action)
 
         # Add specific actions for expense overview
-        if getattr(active_window, "supports_update_menu") == "expense_overview":
+        if active_window.supports_update_menu == "fiat_overview":
             self._add_expense_actions()
 
     def _add_expense_actions(self):
@@ -126,9 +126,9 @@ class AppMenu(QMenuBar):
         """
         Show the About dialog.
         """
-        QMessageBox.about(
+        QMessageBox.information(
             self.parent,
             "About",
             "Sloth's Finance Tracker\n\nVersion: 0.1\n"
-            "Author: Slothmock\n\nTrack your finances effortlessly!",
+            "Author: Slothmock\n\nTrack your finances effortlessly!\n\nIcons provided by\nPixel Buddha & Pixel perfect @ Flaticon"
         )

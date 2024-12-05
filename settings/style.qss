@@ -26,6 +26,16 @@
     color: #d3d3d3
 }
 
+#addButton {
+    font-size: 18px;
+    color: #3eb90e
+}
+
+#removeButton {
+    font-size: 18px;
+    color: #b90e0e
+}
+
 /* Menu styling */
 QMenuBar {
     background-color: #2C3E50;

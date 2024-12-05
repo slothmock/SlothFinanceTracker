@@ -21,9 +21,6 @@ class SettingsDashboard(QMainWindow):
         # Connect close_all_windows signal
         window_manager.close_all_windows.connect(self.close)
 
-        # Shared menu bar
-        self.setMenuBar(AppMenu(self))
-
         # Initialize instance variables
         self.settings = {}
         self.credentials = {}

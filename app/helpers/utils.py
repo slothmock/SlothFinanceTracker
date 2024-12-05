@@ -1,13 +1,6 @@
-import aiofiles
-import aiohttp
-import json
-import os
-import asyncio
-import logging
+import aiofiles, aiohttp, json, os, asyncio, logging
 
 from app.helpers.strings import CREDENTIALS_FILE, SETTINGS_FILE
-from PySide6.QtCore import QObject, QEvent
-
 
 async def fetch_crypto_price(crypto: str, fiat: str = "USD") -> float:
     """
@@ -44,6 +37,7 @@ def parse_float(value, default=0.0) -> float:
         return float(value)
     except (ValueError, TypeError):
         return default
+
 
 # Stylesheet Management
 async def load_stylesheet(filepath: str) -> str:
@@ -112,6 +106,7 @@ async def save_settings(settings: dict) -> None:
         logging.info("Settings saved successfully.")
     except Exception as e:
         logging.exception(f"Error saving settings: {e}")
+
 
 # Credentials Management
 async def load_credentials() -> dict:

@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (
     QPushButton, QDateEdit, QLineEdit, QSpacerItem, QMessageBox, QComboBox, QSizePolicy
 )
 
-from app.helpers.models import DefiPositionsModel
+from app.models.defi_model import DefiPositionsModel
 from app.helpers.strings import DEFI_POS_FILE
 from app.widgets.menu_bar import AppMenu
 from app.widgets.status_label import StatusLabel
@@ -16,7 +16,7 @@ from app.widgets.table import CustomTableWidget
 
 
 class PositionTracker(QMainWindow):
-    supports_update_menu = True
+    supports_update_menu = None
 
     def __init__(self, window_manager):
         super().__init__()
@@ -32,7 +32,7 @@ class PositionTracker(QMainWindow):
         # Shared menu bar
         self.menu_bar = AppMenu(self)
         self.setMenuBar(self.menu_bar)
-
+        
         # Init UI
         self.setup_ui()
 
@@ -111,7 +111,8 @@ class PositionTracker(QMainWindow):
 
             # Fetch data asynchronously
             data = await self.defi_model.fetch_data()
-            self.defi_model.update_data(data)
+            if data is not None:
+                self.defi_model.update_data(data)
 
             # Update filter dropdown
             self.update_filter_dropdown()
@@ -131,7 +132,7 @@ class PositionTracker(QMainWindow):
         """
         Populate the filter dropdown with unique pool names.
         """
-        pools = {row.get("Pool", "") for row in self.defi_model._data}
+        pools = {row.Pool for row in self.defi_model._data}
         self.filter_dropdown.clear()
         self.filter_dropdown.addItem("All")
         self.filter_dropdown.addItems(sorted(pools))
