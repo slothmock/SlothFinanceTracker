@@ -32,12 +32,12 @@ class DefiPositionsModel(AbstractModel):
                             Date=row["Date"],
                             Source=row["Source"],
                             Pool=row["Pool"],
-                            T1_Amount=f"{parse_float(row.get("T1 Amount")):.4f}",
-                            T2_Amount=f"{parse_float(row.get("T2 Amount")):.4f}",
-                            T1_Value=f"${parse_float(row.get("T1 Value")):.2f}",
-                            T2_Value=f"${parse_float(row.get("T2 Value")):.2f}",
-                            Total_Value=f"${parse_float(row.get("T1 Value")) + parse_float(row.get("T2 Value")):.2f}",
-                            Fees=f"${parse_float(row.get("Fees")):.2f}",
+                            T1_Amount=f"{parse_float(row.get('T1 Amount')):.4f}",
+                            T2_Amount=f"{parse_float(row.get('T2 Amount')):.4f}",
+                            T1_Value=f"${parse_float(row.get('T1 Value')):.2f}",
+                            T2_Value=f"${parse_float(row.get('T2 Value')):.2f}",
+                            Total_Value=f"${parse_float(row.get('T1 Value')) + parse_float(row.get('T2 Value')):.2f}",
+                            Fees=f"${parse_float(row.get('Fees')):.2f}",
                         )
                         positions.append(position)
                     except (ValueError, KeyError) as e:

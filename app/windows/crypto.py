@@ -2,9 +2,10 @@ import asyncio
 import logging
 
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy
+    QMainWindow, QApplication, QWidget, QLabel, QVBoxLayout, QHBoxLayout, QSpacerItem, QSizePolicy
 )
 from PySide6.QtCore import Qt, QSize, QEvent
+from PySide6.QtGui import QScreen
 
 from app.models.coinbase_model import CoinbaseHoldingsModel
 from app.models.defi_model import DefiPositionsModel
@@ -21,9 +22,9 @@ class CryptoDashboard(QMainWindow):
 
     def __init__(self, window_manager):
         super().__init__()
+        screen = QScreen(self)
         self.setWindowTitle("Crypto Dashboard")
-        self.setMinimumSize(QSize(1280, 720))
-
+        self.setWindowState(Qt.WindowState.WindowMaximized)
         self.window_manager = window_manager
 
         # Initialize models

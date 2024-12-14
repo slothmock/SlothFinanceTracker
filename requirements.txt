@@ -3,4 +3,5 @@ qasync
 aiohttp
 aiofiles
 coinbase
+coinbase-advanced-py
 cachetools

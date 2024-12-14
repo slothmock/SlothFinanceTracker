@@ -21,7 +21,7 @@ class PositionTracker(QMainWindow):
     def __init__(self, window_manager):
         super().__init__()
         self.setWindowTitle("DeFi Positions Dashboard")
-        self.setMinimumSize(QSize(1280, 720))
+        self.setWindowState(Qt.WindowState.WindowMaximized)
 
         self.window_manager = window_manager
         self.defi_model = DefiPositionsModel()
