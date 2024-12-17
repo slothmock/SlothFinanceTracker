@@ -1,3 +1,4 @@
+import logging
 from PySide6.QtWidgets import QTableView, QHeaderView
 from PySide6.QtCore import Qt
 
@@ -42,7 +43,10 @@ class CustomTableWidget(QTableView):
             int: The index of the currently selected row, or -1 if no row is selected.
         """
         current_index = self.currentIndex()
-        return current_index.row() if current_index.isValid() else -1
+        try:
+            return current_index.row() if current_index.isValid() else -1
+        except IndexError as e:
+            logging.info(f"{e} - Adding position instead...")
 
     def set_model(self, model):
         """

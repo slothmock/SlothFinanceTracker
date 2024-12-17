@@ -8,6 +8,7 @@ from PySide6.QtWidgets import (
     QPushButton, QDateEdit, QLineEdit, QSpacerItem, QMessageBox, QComboBox, QSizePolicy
 )
 
+from app.models.dataclasses import DefiPosition
 from app.models.defi_model import DefiPositionsModel
 from app.helpers.strings import DEFI_POS_FILE
 from app.widgets.menu_bar import AppMenu
@@ -147,8 +148,12 @@ class PositionTracker(QMainWindow):
         """
         Open a dialog to add a new position and refresh the data.
         """
-        data = self.defi_model._data[self.positions_table.get_current_row()]
-        dialog = PositionDialog(filepath=DEFI_POS_FILE, prefill_data=data if data else None)
+        row_index = self.positions_table.get_current_row()
+        if row_index != -1:
+            data = self.defi_model._data[row_index]    
+            dialog = PositionDialog(filepath=DEFI_POS_FILE, prefill_data=data)
+        else:
+            dialog = PositionDialog(filepath=DEFI_POS_FILE, prefill_data=None)    
         if dialog.exec():
             asyncio.create_task(self._update_data_async())
 
@@ -198,15 +203,20 @@ class PositionDialog(QDialog):
         if prefill_data:
             self.prefill_data(prefill_data)
 
-    def prefill_data(self, data):
+    def prefill_data(self, data: DefiPosition):
         """
         Prefill the dialog with existing data.
         """
-        if "Date" in data:
-            self.date_input.setDate(QDate.fromString(data["Date"], "dd-MM-YYYY"))
-        for key, value in data.items():
-            if key in self.inputs:
-                self.inputs[key].setText(str(value).replace("$", ""))
+        for field in data.__dataclass_fields__:
+            value = getattr(data, field)
+            print(f"{field} - {value}")
+            if field == "Date":
+                self.date_input.setDate(QDate.fromString(data.Date, "dd-MM-YYYY"))
+            elif field == "Total_Value":
+                pass
+            else:
+                self.inputs[field.replace("_", " ")].setText(str(value).replace("$", ""))
+            
 
     def save_position(self):
         """

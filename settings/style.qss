@@ -2,7 +2,7 @@
 #mainMenuContainer, #expensesContainer {
     background: qlineargradient(
         x1: 0, y1: 0, x2: 0, y2: 1,
-        stop: 0 #2C3E50, stop: 1 #94AFD8
+        stop: 0 #2C3E50, stop: 1 #497ac4
     );
 }
 
@@ -10,14 +10,14 @@
 #titleLabel {
     font-size: 28px;
     font-weight: bold;
-    color: #FFFFFF;
+    color: #111111;
     margin-bottom: 10px;
 }
 
 /* Subtitle label styling */
 #subtitleLabel {
     font-size: 18px;
-    color: #D6E4F0;
+    color: #a4cbeb;
     margin-bottom: 20px;
 }
 

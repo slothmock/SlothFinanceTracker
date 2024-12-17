@@ -61,6 +61,7 @@ class MainMenu(QMainWindow):
         """
         # Central widget and layout
         container = QWidget()
+        container.setObjectName("mainMenuContainer")
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignCenter)
 
